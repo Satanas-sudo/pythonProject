@@ -3,7 +3,7 @@ import numpy as np  # needed for the array
 
 
 def read_interaction_file_dict(Human_HighQuality):
-    """This function reads an interaction graph between proteins in a tabulated file and stores it in a dictionnary.
+    """This function reads an interaction graph between proteins in a tabulated file and stores it in a dictionary.
 
     "Peaks" proteins are considered as keys and proteins that interacts with them are considered as the values
     associated to the keys.
@@ -16,7 +16,7 @@ def read_interaction_file_dict(Human_HighQuality):
         lines_num_int = int(interaction_file.readline())  # File first line escapement
 
         data_str = interaction_file.readlines()  # Storing in memory the file's data
-        prot_graph_dict = {}  # Dictionnary declaration
+        prot_graph_dict = {}  # Dictionary declaration
         prot_name_str = ""  # Initialization of peak protein's name
 
         # Loop for each line of the document in memory (this loops needs that the file's data be classified)
@@ -30,7 +30,7 @@ def read_interaction_file_dict(Human_HighQuality):
 
             else:
                 prot_name_str = (line.split()[0])  # Storing in memory of the new peak protein (as first element)
-                prot_graph_dict[prot_name_str] = list()  # Corresponding key creation
+                prot_graph_dict[prot_name_str] = list()  # Creation of the corresponding key
                 prot_graph_dict[prot_name_str].append((line.split())[1])  # Interacting protein addition in the list of
                 # associated value (in second element)
 
@@ -65,56 +65,82 @@ print(read_interaction_file_list("C:/Users/a/Documents/Cours_rennes1_master_bioi
 
 
 def read_interaction_file_mat(Human_HighQuality):
+
     with open(Human_HighQuality, "r") as interaction_file:
         lines_num_int = int(interaction_file.readline())
         data_str = interaction_file.readlines()
         prot_data_list = []
         prot_graph_dict = {}
+
         for line in data_str:
             prot1_exist = False
             prot2_exist = False
-            # Cette boucle insère des élements dans une liste, passe qu'une fois (quand la liste est vide), initialise la première prot
-            if prot_data_list == []:  # Vérifie que la liste est vide mais on pourrait s'en passer puisque la ligne suivant met direct la valeur, les ajoute
-                prot_data_list = [(line.split()[0])]  #Piste d'amélioration de la boucle -> liste de compréhension
-                prot_graph_dict[(line.split()[0])] = list() # Déclaratin de la clé sans valeur. Déf d'une val du dict, cette val associée à clé est une liste
-                prot_graph_dict[(line.split()[0])].append((line.split())[1])  # Ajout de la valeur en 2e élément
-            # Quand la fct fera le tour de la liste, elle va matcher que 2 fois au lieu passer à chaque toutes les boucles
-            #
-            for elt in prot_data_list:  # piste d'amélioration -> remplacer les for par compréhension de listes
-                if line.split()[0] == elt or line.split()[1] == elt:  # pas obligatoire, ça va juste plus vite plutôt que de passer toutes les boucles
+
+            # This loop includes elements in a list, pass only once (when the list is empty), initialize the first
+            # protein
+            if prot_data_list == []:  # Checks if list is empty (not mandatory though)
+                prot_data_list = [(line.split()[0])]  # Adds the value into the list
+                prot_graph_dict[(line.split()[0])] = list() # Declaration of the key without value (value is a list)
+                prot_graph_dict[(line.split()[0])].append((line.split())[1])  # Adds the value as second element
+
+            # When the function will screen the list, it will match twice only instead of passing at each loops (not
+            # mandatory but it processes faster than passing every loops)
+            for elt in prot_data_list:
+                if line.split()[0] == elt or line.split()[1] == elt:
                     if (line.split()[0]) == elt:  #6'
                         prot1_exist = True
                         prot_graph_dict[(line.split()[0])].append((line.split())[1])
                     if (line.split()[1]) == elt:
                         prot2_exist = True
                         prot_graph_dict[(line.split()[1])].append((line.split())[0])
+
             if prot2_exist == False:
                 prot_data_list.append((line.split()[1]))
                 prot_graph_dict[(line.split()[1])] = list()
                 prot_graph_dict[(line.split()[1])].append((line.split())[0])
+
             if prot1_exist == False:
                 prot_data_list.append((line.split()[0]))
                 prot_graph_dict[(line.split()[0])] = list()
                 prot_graph_dict[(line.split()[0])].append((line.split())[1])
-        prot_data_list.sort()  # trie dans l'ordre alphabétique, permet de retrouver l'ordre des prot (la matrice retourne que le num des prot de droite)
-        lines_for_mat_dict = {}
-        prot_interaction_mat = np.empty((len(prot_data_list), len(prot_data_list)), int)  # création d'un array vide, déf des dim basée sur la lg des listes des prot (nb colo, nb lignes)
-        for i, elt in enumerate(prot_data_list):  # compare liste de prot du haut vers le bas (décale à chq fois d'une dim, pr chq dim on déclare une clé ds dico, à la fin je récupe chaque clé et ttes les val asso corresp à une dim) (décla d'une clé à chq tor de boucle for)
-            lines_for_mat_dict[i] = list() # déclaration du dico qui va servir à créa de la matrice, parcourt tte la liste de prot
-            print("entrée en comparaison", elt) # de 0 à 27276, déclare la clé '103" du dico (corresp à 1 dim)
-            for j, el in enumerate(prot_data_list):  # pour chaque ligne, parcourt ttes les colo de dim/ttes les listes/la matrice de gauche à droite (corresp aussi à liste)
-                compare_list = [prot_graph_dict[el]] # sort une comp par liste à partir de la prot dans le dico d'inter # le plus grd nb d'inter est 10 ou 11 donc y'a juste ça à parcourir pr les comp
-                for k, e in enumerate(compare_list):  # compare à chaque fois, on se déplace de case en case, gauche à d, h en b
+
+        prot_data_list.sort()  # Sorts in alphabetic order in order to find the proteins' order (the array returns the
+        # number of proteins positioned as the second element only.
+        lines_for_mat_dict = {}  # Dictionary initialization
+        prot_interaction_mat = np.empty((len(prot_data_list), len(prot_data_list)), int)  # Creation of an empty array
+        # which defines dimensions based on proteins lists length (number of columns, number of lines)
+
+        """This loops compares the protein list from the top to the bottom. It shifts at each case of one dimension, a 
+        key is declared in the dictionary for each dimension. A key is declared at each loop.At the end of the loop, we 
+        retrieve each key and all values associated to a dimension. """
+        for i, elt in enumerate(prot_data_list):
+            lines_for_mat_dict[i] = list()  # Dictionary declaration which will be used to create the array, it browses
+            # all the proteins list
+            print("entry in comparison", elt)  # From 0 to 27276, declares the dictionary key
+
+            for j, el in enumerate(prot_data_list):  # For each line, browses all columns, from left to right
+                compare_list = [prot_graph_dict[el]]  # Gives a comparison by list from protein in the dictionary of
+                # interaction
+                for k, e in enumerate(compare_list):  # compares from top to bottom, left to right by shifting case by
+                    # case
                     if el == e:
-                        compare_boo = True  # pour chaque case, test si la case où y s'trouve y'a une corresp entre prot de la colo et prot de la ligne
-                        break  # si corresp trouvée, on casse la boucle sinon ça continue de tourner jusqu'à fin de liste (dc si prot corresp mais c'est pas la dernière il sort false et il la compte pas)
+                        compare_boo = True  # For each case, tests if there is a correspondence between the protein of
+                        # the column and the protein of the line
+                        break  # If a correspondence is found, the loop breaks (prevents from loop running until the end
+                        # of the list, so if it founds a corresponding protein and it is not the last one, then it will
+                        # return false and won't count it
                     else:
-                        compare_boo = False  # t ou f si y'a interaction ou pas, c'est pcq parcourt 2 fois tte la liste avec un test
-                if compare_boo == True: # la clé créée ligne 118 est insérée dans l'array
-                    lines_for_mat_dict[i].append(1) # si c'est true, y'a corresp donc ça l'ajoute à 1
+                        compare_boo = False  # Returns true if there is an interaction or false if there isn't
+                if compare_boo == True:  # Key created before is inserted in the array
+                    lines_for_mat_dict[i].append(1)  # Adds the correspondence to the right column if it returns true
                 else:
-                    lines_for_mat_dict[i].append(0) # sinon à 0
-            np.insert(prot_interaction_mat, i, [lines_for_mat_dict[i]], axis=0)  # nom variable/tab, la dim où j'veux l'ajouter i, [valeur que j'veux ajouter donc ici la ligne du dico avc val i pcq c'est tjrs la mm ligne, dans quel sens on veut l'ajouter
+                    lines_for_mat_dict[i].append(0)  # Adds the protein to the left column if it returns false
+
+            """prot_interact_mat is the variable name, i is the dimension where i want to add it, 
+            [lines_for_mat_dict[i]] is the dictionary line with value i, axis=0 is the direction where we want to add i
+            """
+            np.insert(prot_interaction_mat, i, [lines_for_mat_dict[i]], axis=0)
+
     return prot_interaction_mat
 
 print(read_interaction_file_mat("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
@@ -132,9 +158,80 @@ def read_interaction_file(Human_HighQuality):
     """
     with open(Human_HighQuality, "r") as interaction_file:
 
-        couple_d_l_tuple = [(read_interaction_file_dict(Human_HighQuality)), (read_interaction_file_list(Human_HighQuality))]
-
+        couple_d_l_tuple = [(read_interaction_file_dict(Human_HighQuality)), (read_interaction_file_list
+                                                                              (Human_HighQuality))]
     return couple_d_l_tuple
 
 print(read_interaction_file("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/"
                             "Human_HighQuality.txt"))
+
+
+def count_vertices(Human_HighQuality):
+    """This function counts the number of peaks of a graph."""
+    with open(Human_HighQuality, "r") as interaction_file:
+
+        vertices_int = len(read_interaction_file_dict(Human_HighQuality))  # Counts the number of keys
+        return vertices_int
+
+print(count_vertices("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
+
+def count_edges(Human_HighQuality):
+    """This function counts the number of edges of a graph.
+
+    The number of edges is the same than the number of interactions. In our list, a line corresponds to an interaction.
+    """
+    with open(Human_HighQuality, "r") as interaction_file:
+        edges_int = len(read_interaction_file_list(Human_HighQuality))
+        return edges_int
+print(count_edges("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
+
+
+def clean_interactome(Human_HighQuality):
+    """This function reads a file including an protein-protein interaction graph and removes all repeated interactions,
+    and all homo-dimers from it.
+
+    It returns a new cleaned up file.
+    """
+    with open(Human_HighQuality, "r") as all_interactions_file:
+
+        all_interactions_list = all_interactions_file.readline()
+        cleaned_interactome_list = open("cleaned_interaction_file.txt", "w")
+
+        for prot in all_interactions_list:  # This loops checks if the protein isn't a homo-dimer
+            if prot[0] != prot[1]:  # The interaction is added to the new list if the two proteins are different
+                    cleaned_interactome_list.append(prot)
+
+        cleaned_interactome_list.write("{0} \n".format(prot))
+
+    cleaned_interactome_list.close()
+
+    return cleaned_interactome_list
+
+print(clean_interactome("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
+
+
+def get_degree(Human_HighQuality, prot_str):
+
+    with open(Human_HighQuality, "r") as interaction_file :
+        prot_graph_dict = read_interaction_file_dict(Human_HighQuality)
+        interactions_int = len(prot_graph_dict[prot_str])
+    return interactions_int
+
+print(get_degree("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
+
+
+def get_max_degree(Human_HighQuality):
+
+    with open(Human_HighQuality, "r") as interaction_file :
+
+        prot_graph_dict = read_interaction_file_dict(Human_HighQuality)
+        max_degree_int = 0
+        prot_str = ""
+
+        for vertice in prot_graph_dict:
+            if len(prot_graph_dict[vertice]) > max_degree_int:
+                max_degree_int = len(prot_graph_dict[vertice])
+
+        return (prot_str, max_degree_int)
+
+print(get_max_degree("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
