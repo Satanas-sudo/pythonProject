@@ -9,8 +9,8 @@ def read_interaction_file_dict(Human_HighQuality):
     associated to the keys.
 
     :param Human_HighQuality: interaction file
-    :return: prot_graph_dict
-    :rtype: dictionnary
+    :return: prot_graph_dict: first element as key and their neighbor(s) in second element as the key's value(s)
+    :rtype: dictionary
     """
     with open(Human_HighQuality, "r") as interaction_file:
         lines_num_int = int(interaction_file.readline())  # File first line escapement
@@ -44,7 +44,7 @@ def read_interaction_file_list(Human_HighQuality):
     """This function reads an interaction graph between proteins in a file and stores it in a list of couples.
 
     :param Human_HighQuality: interaction file
-    :return: prot_graph_list
+    :return: prot_graph_list: couples of interacting proteins
     :rtype: list
     """
     with open(Human_HighQuality, "r") as interaction_file:
@@ -65,7 +65,12 @@ print(read_interaction_file_list("C:/Users/a/Documents/Cours_rennes1_master_bioi
 
 
 def read_interaction_file_mat(Human_HighQuality):
+    """This function reads an interaction graph between proteins in a file and stores it in an adjacency matrix.
 
+    :param Human_HighQuality: interaction file
+    :return: prot_interaction_mat: matrix of all interacting proteins that are associated with each other
+    :rtype: array
+    """
     with open(Human_HighQuality, "r") as interaction_file:
         lines_num_int = int(interaction_file.readline())
         data_str = interaction_file.readlines()
@@ -80,14 +85,14 @@ def read_interaction_file_mat(Human_HighQuality):
             # protein
             if prot_data_list == []:  # Checks if list is empty (not mandatory though)
                 prot_data_list = [(line.split()[0])]  # Adds the value into the list
-                prot_graph_dict[(line.split()[0])] = list() # Declaration of the key without value (value is a list)
+                prot_graph_dict[(line.split()[0])] = list()  # Declaration of the key without value (value is a list)
                 prot_graph_dict[(line.split()[0])].append((line.split())[1])  # Adds the value as second element
 
             # When the function will screen the list, it will match twice only instead of passing at each loops (not
             # mandatory but it processes faster than passing every loops)
             for elt in prot_data_list:
                 if line.split()[0] == elt or line.split()[1] == elt:
-                    if (line.split()[0]) == elt:  #6'
+                    if (line.split()[0]) == elt:
                         prot1_exist = True
                         prot_graph_dict[(line.split()[0])].append((line.split())[1])
                     if (line.split()[1]) == elt:
@@ -110,9 +115,9 @@ def read_interaction_file_mat(Human_HighQuality):
         prot_interaction_mat = np.empty((len(prot_data_list), len(prot_data_list)), int)  # Creation of an empty array
         # which defines dimensions based on proteins lists length (number of columns, number of lines)
 
-        """This loops compares the protein list from the top to the bottom. It shifts at each case of one dimension, a 
-        key is declared in the dictionary for each dimension. A key is declared at each loop.At the end of the loop, we 
-        retrieve each key and all values associated to a dimension. """
+        # This loops compares the protein list from the top to the bottom. It shifts at each case of one dimension, a
+        # key is declared in the dictionary for each dimension. A key is declared at each loop. At the end of the loop,
+        # we retrieve each key and all values associated to a dimension.
         for i, elt in enumerate(prot_data_list):
             lines_for_mat_dict[i] = list()  # Dictionary declaration which will be used to create the array, it browses
             # all the proteins list
@@ -136,102 +141,35 @@ def read_interaction_file_mat(Human_HighQuality):
                 else:
                     lines_for_mat_dict[i].append(0)  # Adds the protein to the left column if it returns false
 
-            """prot_interact_mat is the variable name, i is the dimension where i want to add it, 
-            [lines_for_mat_dict[i]] is the dictionary line with value i, axis=0 is the direction where we want to add i
-            """
+            # prot_interact_mat is the variable name, i is the dimension where i want to add it,
+            # [lines_for_mat_dict[i]] is the dictionary line with value i, axis=0 is the direction where we want to add i
             np.insert(prot_interaction_mat, i, [lines_for_mat_dict[i]], axis=0)
 
     return prot_interaction_mat
 
-print(read_interaction_file_mat("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
+print(read_interaction_file_mat("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/"
+                                "Human_HighQuality.txt"))
 
 
 def read_interaction_file(Human_HighQuality):
-    """This function returns a couple where the first element is the dictionnary representing the graph and the second
+    """This function returns a couple where the first element is the dictionary representing the graph and the second
     element is the interaction list representing that same graph.
 
     This function calls the two prior functions and stores them in a tuple.
 
     :param Human_HighQuality: interaction file
-    :return: couple_d_l_tuple
+    :return: couple_d_l_tuple: first element is the dictionary and the second element is the list
     :rtype: tuple
     """
     with open(Human_HighQuality, "r") as interaction_file:
 
-        couple_d_l_tuple = [(read_interaction_file_dict(Human_HighQuality)), (read_interaction_file_list
-                                                                              (Human_HighQuality))]
+        d_int = read_interaction_file_dict(Human_HighQuality)  # Prior function which created the dictionary is stored
+        # in variable d_int
+        l_int = read_interaction_file_list(Human_HighQuality)  # Prior function which created the list is stored in
+        # variable l_int
+        couple_d_l_tuple = [d_int, l_int]  # Creation of the couple with dictionary as first element and list as second
+        # element
     return couple_d_l_tuple
 
 print(read_interaction_file("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/"
                             "Human_HighQuality.txt"))
-
-
-def count_vertices(Human_HighQuality):
-    """This function counts the number of peaks of a graph."""
-    with open(Human_HighQuality, "r") as interaction_file:
-
-        vertices_int = len(read_interaction_file_dict(Human_HighQuality))  # Counts the number of keys
-        return vertices_int
-
-print(count_vertices("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
-
-def count_edges(Human_HighQuality):
-    """This function counts the number of edges of a graph.
-
-    The number of edges is the same than the number of interactions. In our list, a line corresponds to an interaction.
-    """
-    with open(Human_HighQuality, "r") as interaction_file:
-        edges_int = len(read_interaction_file_list(Human_HighQuality))
-        return edges_int
-print(count_edges("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
-
-
-def clean_interactome(Human_HighQuality):
-    """This function reads a file including an protein-protein interaction graph and removes all repeated interactions,
-    and all homo-dimers from it.
-
-    It returns a new cleaned up file.
-    """
-    with open(Human_HighQuality, "r") as all_interactions_file:
-
-        all_interactions_list = all_interactions_file.readline()
-        cleaned_interactome_list = open("cleaned_interaction_file.txt", "w")
-
-        for prot in all_interactions_list:  # This loops checks if the protein isn't a homo-dimer
-            if prot[0] != prot[1]:  # The interaction is added to the new list if the two proteins are different
-                    cleaned_interactome_list.append(prot)
-
-        cleaned_interactome_list.write("{0} \n".format(prot))
-
-    cleaned_interactome_list.close()
-
-    return cleaned_interactome_list
-
-print(clean_interactome("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
-
-
-def get_degree(Human_HighQuality, prot_str):
-
-    with open(Human_HighQuality, "r") as interaction_file :
-        prot_graph_dict = read_interaction_file_dict(Human_HighQuality)
-        interactions_int = len(prot_graph_dict[prot_str])
-    return interactions_int
-
-print(get_degree("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
-
-
-def get_max_degree(Human_HighQuality):
-
-    with open(Human_HighQuality, "r") as interaction_file :
-
-        prot_graph_dict = read_interaction_file_dict(Human_HighQuality)
-        max_degree_int = 0
-        prot_str = ""
-
-        for vertice in prot_graph_dict:
-            if len(prot_graph_dict[vertice]) > max_degree_int:
-                max_degree_int = len(prot_graph_dict[vertice])
-
-        return (prot_str, max_degree_int)
-
-print(get_max_degree("C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt"))
