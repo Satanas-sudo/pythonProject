@@ -71,6 +71,7 @@ def read_interaction_file_mat(Human_HighQuality):
     :return: prot_interaction_mat: matrix of all interacting proteins that are associated with each other
     :rtype: array
     """
+    
     with open(Human_HighQuality, "r") as interaction_file:
         lines_num_int = int(interaction_file.readline())
         data_str = interaction_file.readlines()
