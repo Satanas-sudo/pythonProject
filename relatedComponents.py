@@ -2,10 +2,8 @@ import pathlib
 from pathlib import Path
 import interactomeOOP as main
 
-file = pathlib.Path('C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python', 'Human_HighQuality.txt')
-#file = Path('C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt')
-#file = Path('C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/Human_HighQuality.txt')
-minifile = Path('C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/toy_example.txt')
+bigfile = pathlib.Path('C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python', 'Human_HighQuality.txt')
+file = Path('C:/Users/a/Documents/Cours_rennes1_master_bioinfo/S9_ADG/projet_python/toy_example.txt')
 
 
 class Connexe(main.file):
@@ -26,7 +24,8 @@ class Connexe(main.file):
     # Methods
 
     def extractCC(self, prot):
-        """ This function returns every peaks of the proteins related component."""
+        """This function calculates the related components number of a graph, and gives for each of them their size (its
+        number of proteins)."""
         CC_list = [prot]
         for key in CC_list:
             for prot_cc in self.dict[key]:
@@ -34,7 +33,7 @@ class Connexe(main.file):
                         CC_list.append(prot_cc)  # Neighboor is added to the list
         return CC_list
 
-    print(minifile.extractCC('C'))
+    print(file.extractCC('C'))
 
 
     def countCC(self):
@@ -58,6 +57,7 @@ class Connexe(main.file):
 
         return CC_list
 
+
     def computeCC(self):
         """This function returns a lcc list where each lcc[i] element corresponds to the related component number of the
          protein at a i location in the proteins list of the graph (which is a class attribute)."""
@@ -73,4 +73,29 @@ class Connexe(main.file):
         1. One line by related component.
         2. The first element of the line is the size of the related component.
         3. Then, the list of peaks that compose this related component will be added."""
-        
+        lcc = self.list()
+        CC_file = open('CC_file', 'w')
+
+        for CC in lcc:
+            len_int = len(CC)
+            CC_file.write(str(len_int) + " " + str(CC) + "\n")
+        CC_file.close()
+
+        return CC_file
+
+
+    def density(self):
+        D_float = (2*len(self.count_edges))/(len(self.get_vertices)*(len(self.get_vertices)-1))
+        return D_float
+
+
+    def clustering(self, prot):
+        triangle_int = 0
+        pair_float = (len(self.dict[prot])*(len(self.dict[prot])-1))/2
+
+        for p in self.dict[prot]:
+            for i in self.dict[p]:
+                if p in self.dict[i]:
+                    triangle_int += 1
+
+        return float(triangle_int/pair_float)
