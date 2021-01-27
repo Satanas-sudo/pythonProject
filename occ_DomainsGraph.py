@@ -1,10 +1,8 @@
 import numpy as np
 import proteinDomains
-import urllib.request
 import pickle
-import debug_print
 #import interactomeExplore
-from collections import Counter, OrderedDict
+from collections import Counter
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 import networkx as nx
@@ -216,7 +214,7 @@ class DomainGraph:
         # Only 1 self-occurrence
 
 
-    def see_co_occurrence_graph(self, number):
+    def co_occurrence_graph_to_look(self, number):
         dict_return = {}
         count_co_occurrence = 0
         count_co_occurrence_domain = 0
@@ -270,8 +268,7 @@ class DomainGraph:
 #print(DomainGraph(uniprotDict_file, cooccurenceDict_file, cooccurenceDict_file_withoutNb).top_domains_max_neighbors())
 #print(DomainGraph(uniprotDict_file, cooccurenceDict_file, cooccurenceDict_file_withoutNb).low_domains_min_neighbors())
 #print(DomainGraph(uniprotDict_file, cooccurenceDict_file, cooccurenceDict_file_withoutNb).ls_domains())
-#print(DomainGraph(uniprotDict_file, cooccurenceDict_file, cooccurenceDict_file_withoutNb).load_repetive_dict())
 #print(DomainGraph(uniprotDict_file, cooccurenceDict_file, cooccurenceDict_file_withoutNb).compare_most_neighbors_most_frequent())
 #print(DomainGraph(uniprotDict_file, cooccurenceDict_file, cooccurenceDict_file_withoutNb).self_cooccurrence())  # 1
-#print(DomainGraph(uniprotDict_file, cooccurenceDict_file, cooccurenceDict_file_withoutNb).see_co_occurence_graph(3))
-#print(DomainGraph(uniprotDict_file, cooccurenceDict_file, cooccurenceDict_file_withoutNb).matplolib_visualization(20))
+#print(DomainGraph(uniprotDict_file, cooccurenceDict_file, cooccurenceDict_file_withoutNb).co_occurence_graph_to_look(3))
+#print(DomainGraph(uniprotDict_file, cooccurenceDict_file, cooccurenceDict_file_withoutNb).matplolib_visualization(40))
